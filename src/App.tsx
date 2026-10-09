@@ -79,18 +79,24 @@ export const App: React.FC = () => {
 
   const activeTodos = loadedTodos.filter(todo => !todo.completed);
   const completedTodos = loadedTodos.filter(todo => todo.completed);
+
   const allCompleted =
     loadedTodos.length > 0 && completedTodos.length === loadedTodos.length;
 
+  const handleInvalidTitle = () => {
+    setErrorMessage('Title should not be empty');
+  };
+
   const addTodo = async (title: string): Promise<boolean> => {
     if (!title.trim()) {
-      setErrorMessage('Title should not be empty');
+      handleInvalidTitle();
 
       return false;
     }
 
     setErrorMessage('');
     setIsSubmitting(true);
+
     setTempTodo({
       id: 0,
       userId: USER_ID,
@@ -117,6 +123,7 @@ export const App: React.FC = () => {
 
   const deleteTodoById = (id: number) => {
     setErrorMessage('');
+
     setProcessings(current =>
       current.includes(id) ? current : [...current, id],
     );
@@ -145,6 +152,7 @@ export const App: React.FC = () => {
     }
 
     setErrorMessage('');
+
     setProcessings(current =>
       current.includes(id) ? current : [...current, id],
     );
@@ -169,6 +177,7 @@ export const App: React.FC = () => {
 
   const toggleAll = async () => {
     const targetStatus = !allCompleted;
+
     const todosToUpdate = loadedTodos.filter(
       todo => todo.completed !== targetStatus,
     );
@@ -191,6 +200,7 @@ export const App: React.FC = () => {
       const successfulIds = completedIds.filter(
         (_, index) => results[index].status === 'fulfilled',
       );
+
       const hasError = results.some(result => result.status === 'rejected');
 
       setTodos(
@@ -205,6 +215,7 @@ export const App: React.FC = () => {
       setProcessings(current =>
         current.filter(id => !completedIds.includes(id)),
       );
+
       newTodoRef.current?.focus();
     });
   };
@@ -229,6 +240,7 @@ export const App: React.FC = () => {
             <NewTodo
               ref={newTodoRef}
               onAdd={addTodo}
+              onInvalid={handleInvalidTitle}
               isSubmitting={isSubmitting}
             />
           </header>
@@ -236,6 +248,7 @@ export const App: React.FC = () => {
           <NewTodo
             ref={newTodoRef}
             onAdd={addTodo}
+            onInvalid={handleInvalidTitle}
             isSubmitting={isSubmitting}
           />
         )}

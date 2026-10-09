@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 type Props = {
   onAdd: (title: string) => Promise<boolean>;
+  onInvalid: () => void;
   isSubmitting: boolean;
 };
 
@@ -11,7 +12,7 @@ export type NewTodoHandle = {
 };
 
 export const NewTodo = React.forwardRef<NewTodoHandle, Props>(
-  ({ onAdd, isSubmitting }, ref) => {
+  ({ onAdd, onInvalid, isSubmitting }, ref) => {
     const [title, setTitle] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -33,7 +34,8 @@ export const NewTodo = React.forwardRef<NewTodoHandle, Props>(
       const trimmedTitle = title.trim();
 
       if (!trimmedTitle) {
-        await onAdd('');
+        onInvalid();
+        inputRef.current?.focus();
 
         return;
       }
@@ -67,5 +69,6 @@ NewTodo.displayName = 'NewTodo';
 
 NewTodo.propTypes = {
   onAdd: PropTypes.func.isRequired,
+  onInvalid: PropTypes.func.isRequired,
   isSubmitting: PropTypes.bool.isRequired,
 };
